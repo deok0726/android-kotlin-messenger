@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import de.hdodenhof.circleimageview.CircleImageView
 import org.w3c.dom.Text
 import java.util.*
 
@@ -29,6 +30,7 @@ class RegisterActivity : AppCompatActivity() {
     private val registerButton: Button by lazy { findViewById(R.id.register_button_register) }
     private val accountAlready: TextView by lazy { findViewById(R.id.already_have_account_textview) }
     private val selectPhotoButton: Button by lazy { findViewById(R.id.selectphoto_button_register) }
+    private val selectPhotoImage: CircleImageView by lazy { findViewById(R.id.selectphoto_imageview_register) }
     private val username: EditText by lazy { findViewById(R.id.username_edittext_register) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,8 +73,12 @@ class RegisterActivity : AppCompatActivity() {
             selectedPhotoUri = data?.data
 
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedPhotoUri)
-            val bitmapDrawable = BitmapDrawable(bitmap)
-            selectPhotoButton.setBackgroundDrawable(bitmapDrawable)
+
+            selectPhotoImage.setImageBitmap(bitmap)
+            selectPhotoButton.alpha = 0f
+
+//            val bitmapDrawable = BitmapDrawable(bitmap)
+//            selectPhotoButton.setBackgroundDrawable(bitmapDrawable)
 
         }
     }
