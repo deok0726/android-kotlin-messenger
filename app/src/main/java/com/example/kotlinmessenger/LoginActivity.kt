@@ -41,12 +41,12 @@ class LoginActivity: AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.d("Auth", "signInWithEmail:success")
+                    Log.d("LoginAuth", "signInWithEmail:success")
                     val user = auth.currentUser
 //                    updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w("Auth", "signInWithEmail:failure", task.exception)
+                    Log.w("LoginAuth", "signInWithEmail:failure", task.exception)
                     Toast.makeText(baseContext, "Authentication failed.",
                         Toast.LENGTH_SHORT).show()
 //                    updateUI(null)

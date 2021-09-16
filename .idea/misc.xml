@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/AndroidStudioProjects/KotlinMessenger/app/src/main/res/drawable/circle_button.xml" value="0.259375" />
         <entry key="..\:/AndroidStudioProjects/KotlinMessenger/app/src/main/res/drawable/rounded_button.xml" value="0.259375" />
+        <entry key="..\:/AndroidStudioProjects/KotlinMessenger/app/src/main/res/drawable/rounded_button_selectphoto.xml" value="0.2557291666666667" />
         <entry key="..\:/AndroidStudioProjects/KotlinMessenger/app/src/main/res/drawable/rounded_edittext_register_login.xml" value="0.259375" />
         <entry key="..\:/AndroidStudioProjects/KotlinMessenger/app/src/main/res/layout/activity_login.xml" value="0.5" />
         <entry key="..\:/AndroidStudioProjects/KotlinMessenger/app/src/main/res/layout/activity_main.xml" value="0.33" />
