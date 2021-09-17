@@ -1,11 +1,13 @@
 package com.example.kotlinmessenger
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kotlinmessenger.messages.ChatLogActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -56,6 +58,15 @@ class NewMessageActivity : AppCompatActivity() {
                         // Add the number of users in database
                         adapter.add(UserItem(user))
                     }
+                }
+
+                adapter.setOnItemClickListener { item, view ->
+
+                    val intent = Intent(view.context,  ChatLogActivity::class.java)
+                    startActivity(intent)
+
+                    // Go back to LatestMessageActivity
+                    finish()
                 }
                 recyclerview_newmessage.adapter = adapter
             }
