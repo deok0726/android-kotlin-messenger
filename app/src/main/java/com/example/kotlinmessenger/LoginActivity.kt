@@ -19,6 +19,7 @@ class LoginActivity: AppCompatActivity() {
 
         val loginButton: Button = findViewById(R.id.login_button_login)
         val backRegister: TextView = findViewById(R.id.back_to_register_textview)
+
         // Initialize Firebase Auth
         auth = Firebase.auth
 
@@ -30,6 +31,7 @@ class LoginActivity: AppCompatActivity() {
         }
 
     }
+
     private fun performLogin() {
         val email: EditText = findViewById(R.id.email_edittext_login)
         val password: EditText = findViewById(R.id.password_edittext_login)
@@ -42,14 +44,11 @@ class LoginActivity: AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("LoginAuth", "signInWithEmail:success")
-                    val user = auth.currentUser
-//                    updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("LoginAuth", "signInWithEmail:failure", task.exception)
                     Toast.makeText(baseContext, "Authentication failed.",
                         Toast.LENGTH_SHORT).show()
-//                    updateUI(null)
                 }
             }
     }

@@ -106,5 +106,4 @@
         app:layout_constraintStart_toStartOf="@+id/selectphoto_button_register"
         app:layout_constraintTop_toTopOf="@+id/selectphoto_button_register" />
 
-
 </androidx.constraintlayout.widget.ConstraintLayout>

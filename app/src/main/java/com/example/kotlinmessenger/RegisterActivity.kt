@@ -33,6 +33,10 @@ class RegisterActivity : AppCompatActivity() {
     private val selectPhotoImage: CircleImageView by lazy { findViewById(R.id.selectphoto_imageview_register) }
     private val username: EditText by lazy { findViewById(R.id.username_edittext_register) }
 
+    companion object {
+        val TAG = "RegisterActivity"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -40,20 +44,23 @@ class RegisterActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
 
+        // Click register button
         registerButton.setOnClickListener {
             performRegister()
         }
 
+        // Click already have an account text
         accountAlready.setOnClickListener {
-            Log.d("RegisterActivity", "Try to show login activity")
+            Log.d(TAG, "Try to show login activity")
 
             // launch the login activity somehow
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
+        // Click select photo button
         selectPhotoButton.setOnClickListener {
-            Log.d("RegisterActivity", "Try to show photo selector")
+            Log.d(TAG, "Try to show photo selector")
 
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "image/*"
@@ -65,9 +72,10 @@ class RegisterActivity : AppCompatActivity() {
 
     private var selectedPhotoUri: Uri? = null
 
+    // Select photo and change button background to photo
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            Log.d("RegisterActivity", "Photo was selected")
+            Log.d(TAG, "Photo was selected")
 
             val data: Intent? = result.data
             selectedPhotoUri = data?.data
@@ -87,20 +95,22 @@ class RegisterActivity : AppCompatActivity() {
         resultLauncher.launch(intent)
     }
 
+    // Add authentication in firebase
     private fun performRegister() {
         val email: EditText = findViewById(R.id.email_edittext_register)
         val password: EditText = findViewById(R.id.password_edittext_register)
         val emailText = email.text.toString()
         val passwordText = password.text.toString()
+        val usernameText = username.text.toString()
 
-        if (emailText.isEmpty() || passwordText.isEmpty()) {
-            Log.d("RegisterActivity", "Please enter text in email/pw")
-            Toast.makeText(this, "Please enter text in email/pw", Toast.LENGTH_SHORT).show()
+        if (usernameText.isEmpty() || emailText.isEmpty() || passwordText.isEmpty()) {
+            Log.d(TAG, "Please enter text in username/email/pw")
+            Toast.makeText(this, "Please enter text in username/email/pw", Toast.LENGTH_SHORT).show()
             return
         }
 
-        Log.d("RegisterActivity", "Email is $emailText")
-        Log.d("RegisterActivity", "password is $passwordText")
+        Log.d(TAG, "Email is $emailText")
+        Log.d(TAG, "password is $passwordText")
 
         // Firebase Authentication to create a user with email and password
         auth.createUserWithEmailAndPassword(emailText, passwordText)
@@ -127,16 +137,16 @@ class RegisterActivity : AppCompatActivity() {
 
         ref.putFile(selectedPhotoUri!!)
             .addOnSuccessListener {
-                Log.d("RegisterActivity", "Successfully uploaded image: ${it.metadata?.path}")
+                Log.d(TAG, "Successfully uploaded image: ${it.metadata?.path}")
 
                 ref.downloadUrl.addOnSuccessListener {
-                    Log.d("RegisterActivity", "Image file Location: $it")
+                    Log.d(TAG, "Image file Location: $it")
 
                     saveUserToFirebaseDatabase(it.toString())
                 }
             }
             .addOnFailureListener {
-                Log.d("RegisterActivity", "Fail to store image file")
+                Log.d(TAG, "Fail to store image file")
             }
     }
 
@@ -146,15 +156,24 @@ class RegisterActivity : AppCompatActivity() {
         val ref = database.getReference("/users/$uid")
         val user = User(uid, username.text.toString(), profileImageUrl)
 
+        // Upload to database as User class format
         ref.setValue(user)
             .addOnSuccessListener {
-                Log.d("RegisterActivity", "Finally saved the user to Firebase database")
+                Log.d(TAG, "Finally saved the user to Firebase database")
+
+                val intent = Intent(this, LatestMessagesActivity::class.java)
+                // Without this code, we go back and start app again then RegisterActivity pops up. But we want LatestMessagesActivity to come up
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
             }
             .addOnFailureListener {
-                Log.d("RegisterActivity", "Fail to save the user to Firebase database")
+                Log.d(TAG, "Fail to save the user to Firebase database")
             }
     }
 
 }
 
-class User(val uid: String, val username: String, val profileImageUrl: String)
+class User(val uid: String, val username: String, val profileImageUrl: String) {
+    // This is no-argument constructor
+    constructor(): this("", "", "")
+}
