@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.kotlinmessenger.messages.LatestMessagesActivity
+import com.example.kotlinmessenger.models.User
 import com.example.kotlinmessenger.registerlogin.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -168,9 +169,4 @@ class RegisterActivity : AppCompatActivity() {
             }
     }
 
-}
-
-class User(val uid: String, val username: String, val profileImageUrl: String) {
-    // This is no-argument constructor
-    constructor(): this("", "", "")
 }
