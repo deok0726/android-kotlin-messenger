@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -34,16 +35,17 @@ class ChatLogActivity : AppCompatActivity() {
 
     val adapter = GroupieAdapter()
 
+    var toUser: User? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
 
         recyclerview_chatlog.adapter = adapter
 
-        val user = intent.getParcelableExtra<User>(NewMessageActivity.USER_KEY)
-        supportActionBar?.title = user?.username
+        toUser = intent.getParcelableExtra<User>(NewMessageActivity.USER_KEY)
+        supportActionBar?.title = toUser?.username
 
-//        setupDummyData()
         listenForMessages()
 
         send_button_chatlog.setOnClickListener {
@@ -55,21 +57,22 @@ class ChatLogActivity : AppCompatActivity() {
     private fun listenForMessages() {
         val database = Firebase.database("https://kotlin-messenger-f0dda-default-rtdb.asia-southeast1.firebasedatabase.app")
         val ref = database.getReference("/messages")
-
+        Log.d(TAG, "I'm logged in ${FirebaseAuth.getInstance().uid!!}")
         ref.addChildEventListener(object: ChildEventListener {
 
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 // Bring messages from firebase
                 val chatMessage = snapshot.getValue(ChatMessage::class.java)
-
+                Log.d(TAG, "Message was sent from ${chatMessage?.fromId!!}")
                 if (chatMessage != null) {
                     Log.d(TAG, chatMessage!!.text)
 
                     // Check where the message comes from or go to
                     if (chatMessage.fromId == FirebaseAuth.getInstance().uid) {
-                        adapter.add(ChatFromItem(chatMessage.text))
+                        val currentUser = LatestMessagesActivity.currentUser?: return
+                        adapter.add(ChatFromItem(chatMessage.text, currentUser))
                     } else {
-                        adapter.add(ChatToItem(chatMessage.text))
+                        adapter.add(ChatToItem(chatMessage.text, toUser!!))
                     }
                 }
             }
@@ -112,25 +115,17 @@ class ChatLogActivity : AppCompatActivity() {
                 Log.d(TAG, "Saved out chat message: ${ref.key}")
             }
     }
-
-    private fun setupDummyData() {
-        val adapter = GroupieAdapter()
-
-        adapter.add(ChatFromItem("From message"))
-        adapter.add(ChatToItem("To message"))
-        adapter.add(ChatFromItem("From message"))
-        adapter.add(ChatToItem("To message"))
-        adapter.add(ChatFromItem("From message"))
-        adapter.add(ChatToItem("To message"))
-
-        recyclerview_chatlog.adapter = adapter
-    }
 }
 
-class ChatFromItem(val text: String): Item<GroupieViewHolder>() {
+class ChatFromItem(val text: String, val user: User): Item<GroupieViewHolder>() {
     // Access particular UI component
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.textview_from_row.text = text
+
+        // Load our user image into the start
+        val uri = user.profileImageUrl
+        val targetImageView = viewHolder.itemView.imageview_from_row
+        Picasso.get().load(uri).into(targetImageView)
     }
     // Call layout
     override fun getLayout(): Int {
@@ -138,10 +133,15 @@ class ChatFromItem(val text: String): Item<GroupieViewHolder>() {
     }
 }
 
-class ChatToItem(val text: String): Item<GroupieViewHolder>() {
+class ChatToItem(val text: String, val user: User): Item<GroupieViewHolder>() {
     // Access particular UI component
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.textview_to_row.text = text
+
+        // Load our user image into the start
+        val uri = user.profileImageUrl
+        val targetImageView = viewHolder.itemView.imageview_to_row
+        Picasso.get().load(uri).into(targetImageView)
     }
     // Call layout
     override fun getLayout(): Int {

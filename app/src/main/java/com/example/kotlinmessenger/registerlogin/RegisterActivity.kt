@@ -32,7 +32,7 @@ class RegisterActivity : AppCompatActivity() {
     private val username: EditText by lazy { findViewById(R.id.username_edittext_register) }
 
     companion object {
-        val TAG = "RegisterActivity"
+        const val TAG = "RegisterActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

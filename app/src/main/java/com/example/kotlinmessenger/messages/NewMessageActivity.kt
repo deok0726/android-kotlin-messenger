@@ -22,8 +22,8 @@ import kotlinx.android.synthetic.main.user_row_new_message.view.*
 
 class NewMessageActivity : AppCompatActivity() {
     companion object {
-        val TAG = "NewMessageActivity"
-        val USER_KEY = "USER_KEY"
+        const val TAG = "NewMessageActivity"
+        const val USER_KEY = "USER_KEY"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
