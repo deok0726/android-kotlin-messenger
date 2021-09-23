@@ -10,6 +10,8 @@ import com.example.kotlinmessenger.NewMessageActivity
 import com.example.kotlinmessenger.R
 import com.example.kotlinmessenger.models.ChatMessage
 import com.example.kotlinmessenger.models.User
+import com.example.kotlinmessenger.views.ChatFromItem
+import com.example.kotlinmessenger.views.ChatToItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -55,8 +57,10 @@ class ChatLogActivity : AppCompatActivity() {
     }
 
     private fun listenForMessages() {
+        val fromId = FirebaseAuth.getInstance().uid
+        val toId = toUser?.uid
         val database = Firebase.database("https://kotlin-messenger-f0dda-default-rtdb.asia-southeast1.firebasedatabase.app")
-        val ref = database.getReference("/messages")
+        val ref = database.getReference("/user-messages/$fromId/$toId")
         Log.d(TAG, "I'm logged in ${FirebaseAuth.getInstance().uid!!}")
         ref.addChildEventListener(object: ChildEventListener {
 
@@ -105,46 +109,20 @@ class ChatLogActivity : AppCompatActivity() {
 
         val database = Firebase.database("https://kotlin-messenger-f0dda-default-rtdb.asia-southeast1.firebasedatabase.app")
         // push() automatically generates node
-        val ref = database.getReference("/messages").push()
+        val ref = database.getReference("/user-messages/$fromId/$toId").push()
+
+        val toRef = database.getReference("/user-messages/$toId/$fromId").push()
 
         if (fromId == null) return
 
         val chatMessage = ChatMessage(ref.key!!, text, fromId, toId, System.currentTimeMillis() / 1000)
+
         ref.setValue(chatMessage)
             .addOnSuccessListener {
                 Log.d(TAG, "Saved out chat message: ${ref.key}")
+                message_edittext_chatlog.text.clear()
+                recyclerview_chatlog.scrollToPosition(adapter.itemCount - 1)
             }
-    }
-}
-
-class ChatFromItem(val text: String, val user: User): Item<GroupieViewHolder>() {
-    // Access particular UI component
-    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.textview_from_row.text = text
-
-        // Load our user image into the start
-        val uri = user.profileImageUrl
-        val targetImageView = viewHolder.itemView.imageview_from_row
-        Picasso.get().load(uri).into(targetImageView)
-    }
-    // Call layout
-    override fun getLayout(): Int {
-        return R.layout.chat_from_row
-    }
-}
-
-class ChatToItem(val text: String, val user: User): Item<GroupieViewHolder>() {
-    // Access particular UI component
-    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.textview_to_row.text = text
-
-        // Load our user image into the start
-        val uri = user.profileImageUrl
-        val targetImageView = viewHolder.itemView.imageview_to_row
-        Picasso.get().load(uri).into(targetImageView)
-    }
-    // Call layout
-    override fun getLayout(): Int {
-        return R.layout.chat_to_row
+        toRef.setValue(chatMessage)
     }
 }
