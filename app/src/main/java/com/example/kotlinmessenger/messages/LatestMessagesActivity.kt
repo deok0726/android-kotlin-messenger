@@ -6,16 +6,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.kotlinmessenger.NewMessageActivity
 import com.example.kotlinmessenger.R
 import com.example.kotlinmessenger.RegisterActivity
 import com.example.kotlinmessenger.models.ChatMessage
 import com.example.kotlinmessenger.models.User
+import com.example.kotlinmessenger.views.LatestMessageRow
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -36,6 +39,19 @@ class LatestMessagesActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         recyclerview_latest_messages.adapter = adapter
+        recyclerview_latest_messages.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+
+        // Set item click listener on your adapter
+        adapter.setOnItemClickListener { item, view ->
+            val intent = Intent(this, ChatLogActivity::class.java)
+
+            // We are missing the chat partner user
+            val row = item as LatestMessageRow
+
+            // Can go to chat room when click latest message
+            intent.putExtra(NewMessageActivity.USER_KEY, row.chatPartnerUser)
+            startActivity(intent)
+        }
 
         listenForLatestMessages()
 
@@ -47,16 +63,7 @@ class LatestMessagesActivity : AppCompatActivity() {
         verifyUserIsLoggedIn()
     }
 
-    class LatestMessageRow(val chatMessage: ChatMessage): Item<GroupieViewHolder>() {
-        override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-            viewHolder.itemView.message_textview_latest_message.text = chatMessage.text
-        }
-
-        override fun getLayout(): Int {
-            return R.layout.latest_message_row
-        }
-
-    }
+    val adapter = GroupieAdapter()
 
     val latestMessagesMap = HashMap<String, ChatMessage>()
 
@@ -100,8 +107,6 @@ class LatestMessagesActivity : AppCompatActivity() {
 
         })
     }
-
-    val adapter = GroupieAdapter()
 
     private fun fetchCurrentUser() {
         val uid = FirebaseAuth.getInstance().uid
