@@ -68,7 +68,7 @@ class NewMessageActivity : AppCompatActivity() {
                     // Go back to LatestMessageActivity
                     finish()
                 }
-                recyclerview_newmessage.adapter = adapter
+                recyclerview_new_messages.adapter = adapter
             }
             override fun onCancelled(error: DatabaseError) {
 

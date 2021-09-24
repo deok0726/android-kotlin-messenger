@@ -7,7 +7,7 @@
     tools:context=".NewMessageActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_newmessage"
+        android:id="@+id/recyclerview_new_messages"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_width="0dp"
         android:layout_height="0dp"
